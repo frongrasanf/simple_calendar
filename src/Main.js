@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './Main.css';
+import DisplayWeeks from './DisplayWeeks';
 import moment from 'moment';
 
 class Main extends Component {
@@ -70,10 +71,13 @@ class Main extends Component {
     return (
       <div>
         <div className="Calendar-header">
+          <button onClick={this.moveToNextMonth}>先月</button>
+          <button onClick={this.moveToNextMonth}>次月</button>
           <div className="Calendar-header-text">xx月</div>
         </div>
         <div className="Calendar-body">
           {weekInfo}
+          <DisplayWeeks displayDays={this.state.displayDays} />
         </div>
       </div>
     );
