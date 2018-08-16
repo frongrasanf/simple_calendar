@@ -1,8 +1,16 @@
 import React, { Component } from 'react';
 
 class DisplayWeeks extends Component {
+  constructor(props) {
+    super(props)
+  }
+  click(i) {
+    console.log("i", i)
+    return this.props.setSelectedDay(i)
+  }
   render() {
     console.log("called")
+    console.log("this", this.props)
     let { displayDays } = this.props
     let weekNum = displayDays.length / 7
     let array = []
@@ -18,7 +26,7 @@ class DisplayWeeks extends Component {
             <div className="Week-row">
               {dayArray.map((day) => {
                 return (
-                  <div className="Day-box">
+                  <div onClick={e => this.click(day)} className="Day-box">
                     {day}
                   </div>
                 )
