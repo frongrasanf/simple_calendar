@@ -16,7 +16,8 @@ class Main extends Component {
       year: year,
       firstDay: firstDay,
       displayDays: [],
-      newScheduleTitle: ""
+      newScheduleTitle: "",
+      selectedDay: ""
     }
     this.moveToNextMonth = this.moveToNextMonth.bind(this)
     this.handleChange = this.handleChange.bind(this)
@@ -137,6 +138,14 @@ class Main extends Component {
           {weekInfo}
           <DisplayWeeks moveToNextMonth={this.moveToNextMonth} displayDays={this.state.displayDays} />
         </div>
+        <form>
+          <label>
+            Title:
+            <textarea name="title" value={this.state.newScheduleTitle} onChange={this.handleChange} />
+          </label>
+          <div>{this.state.selectedDay}</div>
+          <button onClick={this.handleSubmit}>save</button>
+        </form>
       </div>
     );
   }
