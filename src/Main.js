@@ -9,7 +9,7 @@ class Main extends Component {
     const today = moment()
     const month = today.month()
     const year = today.year()
-    const firstDay = moment().year(year).month(month).date(1)
+    const firstDay = today.startOf('month')
     this.state = {
       today: today,
       month: month,
@@ -32,10 +32,8 @@ class Main extends Component {
   // propsで渡ってきたslectedDayを日付として扱いたい
   setSelectedDay(day) {
     console.log("here", day)
-    let selectDayArray = day.split("/")
-    console.log("momentarray", selectDayArray)
-    let someday = moment().year(2018).month(7).date(1).format("YYYY/MM/DD")
-    console.log("someday", someday)
+    let array = day.split("/")
+    let someday = moment().year(array[0]).month(array[1] - 1).date(array[2]).format("YYYY/M/D")
     this.setState({
       selectedDay: someday
     })
@@ -62,16 +60,16 @@ class Main extends Component {
   let dayArray = [];
   //1日よりも前の日を入れる
   for (let i = 0; i < wday; i++) {
-    let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/MM/DD")
+    let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/M/D")
     dayArray.push(beforeDay)
-    tempDay.add(wday - i, 'days').format("YYYY/MM/DD")
+    tempDay.add(wday - i, 'days').format("YYYY/M/D")
   }
 
   let flag = true
   while(flag = true) {
-    let day = tempDay.format("YYYY/MM/DD")
+    let day = tempDay.format("YYYY/M/D")
     dayArray.push(day)
-    tempDay.add(1, 'days').format("YYYY/MM/DD")
+    tempDay.add(1, 'days').format("YYYY/M/D")
     // 12月を表示する場合、ここは11
     let tsugi2 = tempDay.month()
     if (tempDay.day() === 0) {
@@ -93,7 +91,6 @@ class Main extends Component {
 }
 
   componentWillMount() {
-    console.log("will")
     const { firstDay, month, displayDays } = this.state
     let tempDay = firstDay
     let wday = firstDay.day();
@@ -102,17 +99,17 @@ class Main extends Component {
     let dayArray = [];
     // 1日よりも前の日を入れる
     for (let i = 0; i < wday; i++) {
-      let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/MM/DD")
+      let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/M/D")
       dayArray.push(beforeDay)
-      tempDay.add(wday - i, 'days').format("YYYY/MM/D")
+      tempDay.add(wday - i, 'days').format("YYYY/M/D")
     }
 
     let nextMonth = tempMonth + 1
     let flag = true
     while(flag = true) {
-      let day = tempDay.format("YYYY/MM/DD")
+      let day = tempDay.format("YYYY/M/D")
       dayArray.push(day)
-      tempDay.add(1, 'days').format("YYYY/MM/DD")
+      tempDay.add(1, 'days').format("YYYY/M/D")
       tempMonth = tempDay.month()
       if (tempDay.day() === 0) {
         if (tempMonth === nextMonth) {
@@ -126,7 +123,6 @@ class Main extends Component {
     })
   }
   render() {
-    console.log("main", this.state.setSelectedDay)
     const weekInfo = (
       <div className="Week-info">
         <div className="Week-row">
