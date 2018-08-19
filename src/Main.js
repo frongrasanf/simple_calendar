@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import './Main.css';
 import DisplayWeeks from './DisplayWeeks';
 import moment from 'moment';
+import axios from 'axios';
+import ENV from './.env';
+
+const ApiEndpoint = ENV.API_ENDPOINT
 
 class Main extends Component {
   constructor() {
@@ -17,21 +21,38 @@ class Main extends Component {
       firstDay: firstDay,
       displayDays: [],
       newScheduleTitle: "",
-      selectedDay: ""
+      selectedDay: "",
+      scheduleList: []
     }
     this.moveToNextMonth = this.moveToNextMonth.bind(this)
+    this.moveToPreviousMonth = this.moveToPreviousMonth.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.setSelectedDay = this.setSelectedDay.bind(this)
+    this.setScheduleList = this.setScheduleList.bind(this)
   }
+
   handleChange(e) {
     this.setState({newScheduleTitle: e.target.value});
   }
-  handleSubmit() {
+  handleSubmit(e) {
+    let params = new URLSearchParams()
+    const input = this.state.newScheduleTitle
+    const time = this.state.selectedDay
+    params.append('title', input)
+    params.append('start_at', time)
+    axios.post(ApiEndpoint + "schedules", params)
+    .then((res) => {
+      console.log("res", res.data)
+      this.setState({
+        scheduleList: res.data,
+        newScheduleTitle: ""
+      })
+    })
+    e.preventDefault()
   }
   // propsで渡ってきたslectedDayを日付として扱いたい
   setSelectedDay(day) {
-    console.log("here", day)
     let array = day.split("/")
     let someday = moment().year(array[0]).month(array[1] - 1).date(array[2]).format("YYYY/M/D")
     this.setState({
@@ -39,56 +60,126 @@ class Main extends Component {
     })
   }
   moveToNextMonth() {
-  const { firstDay, month, displayDays, year } = this.state
-  let tsugi = month + 1
-  let tempYear = year
-  let firstDay2 = ""
-  // 12月から1月の場合
-  if (tsugi == 12) {
-    tsugi = 0
-    tempYear = tempYear + 1
-    firstDay2 = moment().year(tempYear).month(tsugi).date(1)
-  } else {
-    firstDay2 = moment().year(tempYear).month(tsugi).date(1)
-  }
+    const { firstDay, month, displayDays, year } = this.state
+    let tsugi = month + 1
+    let tempYear = year
+    let firstDay2 = ""
+    // 12月から1月の場合
+    if (tsugi == 12) {
+      tsugi = 0
+      tempYear = tempYear + 1
+      firstDay2 = moment().year(tempYear).month(tsugi).date(1)
+    } else {
+      firstDay2 = moment().year(tempYear).month(tsugi).date(1)
+    }
 
-  //ここから表示する日付を計算
-  let tempDay = firstDay2;
-  let wday = firstDay2.day();
-  let tempMonth = tsugi
+    //ここから表示する日付を計算
+    let tempDay = firstDay2;
+    let wday = firstDay2.day();
+    let tempMonth = tsugi
 
-  let dayArray = [];
-  //1日よりも前の日を入れる
-  for (let i = 0; i < wday; i++) {
-    let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/M/D")
-    dayArray.push(beforeDay)
-    tempDay.add(wday - i, 'days').format("YYYY/M/D")
-  }
+    let dayArray = [];
+    //1日よりも前の日を入れる
+    for (let i = 0; i < wday; i++) {
+      let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/M/D")
+      dayArray.push(beforeDay)
+      tempDay.add(wday - i, 'days').format("YYYY/M/D")
+    }
 
-  let flag = true
-  while(flag = true) {
-    let day = tempDay.format("YYYY/M/D")
-    dayArray.push(day)
-    tempDay.add(1, 'days').format("YYYY/M/D")
-    // 12月を表示する場合、ここは11
-    let tsugi2 = tempDay.month()
-    if (tempDay.day() === 0) {
-      if (tsugi2 === tsugi + 1) {
-        flag = false
-        break;
-      } else if (tsugi === 11 && tsugi2 === 0) {
-        flag = false
-        break;
+    let flag = true
+    while(flag = true) {
+      let day = tempDay.format("YYYY/M/D")
+      dayArray.push(day)
+      tempDay.add(1, 'days').format("YYYY/M/D")
+      // 12月を表示する場合、ここは11
+      let tsugi2 = tempDay.month()
+      if (tempDay.day() === 0) {
+        if (tsugi2 === tsugi + 1) {
+          flag = false
+          break;
+        } else if (tsugi === 11 && tsugi2 === 0) {
+          flag = false
+          break;
+        }
       }
     }
+    this.setState({
+      month: tsugi,
+      year: tempYear,
+      displayDays: dayArray,
+      selectedDay: ""
+    })
+    let params = new URLSearchParams()
+    let monthParams = tsugi
+    let queryDate = moment().year(tempYear).month(tsugi).date(1).format("YYYY-M-D")
+
+    axios.get(ApiEndpoint+ `?date=${queryDate}`)
+    .then((res) => {
+      console.log("res", res.data)
+      this.setState({ scheduleList: res.data})
+    })
   }
-  this.setState({
-    month: tsugi,
-    year: tempYear,
-    displayDays: dayArray,
-    selectedDay: ""
-  })
-}
+  moveToPreviousMonth() {
+    const { firstDay, month, displayDays, year } = this.state
+    let mae = month - 1
+    let tempYear = year
+    let firstDay3 = ""
+    // 12月から1月の場合
+    if (mae == -1) {
+      mae = 11
+      tempYear = tempYear - 1
+      firstDay3 = moment().year(tempYear).month(mae).date(1)
+    } else {
+      firstDay3 = moment().year(tempYear).month(mae).date(1)
+    }
+
+    //ここから表示する日付を計算
+    let tempDay = firstDay3;
+    let wday = firstDay3.day();
+    let tempMonth = mae
+
+    let dayArray = [];
+    //1日よりも前の日を入れる
+    for (let i = 0; i < wday; i++) {
+      let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/M/D")
+      dayArray.push(beforeDay)
+      tempDay.add(wday - i, 'days').format("YYYY/M/D")
+    }
+
+    let flag = true
+    while(flag = true) {
+      let day = tempDay.format("YYYY/M/D")
+      dayArray.push(day)
+      tempDay.add(1, 'days').format("YYYY/M/D")
+      // 12月を表示する場合、ここは11
+      let mae2 = tempDay.month()
+      if (tempDay.day() === 0) {
+        if (mae2 === mae + 1) {
+          flag = false
+          break;
+        } else if (mae === 11 && mae2 === 0) {
+          flag = false
+          break;
+        }
+      }
+    }
+    this.setState({
+      month: mae,
+      year: tempYear,
+      displayDays: dayArray,
+      selectedDay: ""
+    })
+    let params = new URLSearchParams()
+    let monthParams = mae
+    let queryDate = moment().year(tempYear).month(mae).date(1).format("YYYY-M-D")
+
+    axios.get(ApiEndpoint+ `?date=${queryDate}`)
+    .then((res) => {
+      console.log("res", res.data)
+      this.setState({ scheduleList: res.data})
+    })
+
+  }
 
   componentWillMount() {
     const { firstDay, month, displayDays } = this.state
@@ -122,7 +213,26 @@ class Main extends Component {
       displayDays: dayArray
     })
   }
+  setScheduleList() {
+    console.log("month", this.state.month)
+    axios.get(ApiEndpoint)
+    .then((res) => {
+      console.log("res", res.data)
+      this.setState({ scheduleList: res.data})
+    })
+  }
+  componentDidMount() {
+    console.log("did  idd")
+    this.setScheduleList()
+  }
   render() {
+    const { scheduleList } = this.state
+    const displayList = scheduleList.map((list) => {
+      return (
+        <p>{list.title}</p>
+      )
+    })
+
     const weekInfo = (
       <div className="Week-info">
         <div className="Week-row">
@@ -140,7 +250,7 @@ class Main extends Component {
     return (
       <div>
         <div className="Calendar-header">
-          <button className="Month-button">先月</button>
+          <button className="Month-button" onClick={this.moveToPreviousMonth}>先月</button>
           <button className="Month-button" onClick={this.moveToNextMonth}>次月</button>
           <div className="Calendar-header-text">{this.state.year}年 {this.state.month + 1}月</div>
         </div>
@@ -152,14 +262,20 @@ class Main extends Component {
             displayDays={this.state.displayDays}
           />
         </div>
-        <form>
-          <label>
-            Title:
-            <textarea name="title" value={this.state.newScheduleTitle} onChange={this.handleChange} />
-          </label>
-          <div>{this.state.selectedDay}</div>
-          <button onClick={this.handleSubmit}>save</button>
-        </form>
+        <div className="Api-field">
+          <form className="New-schedule-form">
+            <label>
+              Title:
+              <textarea name="title" value={this.state.newScheduleTitle} onChange={this.handleChange} />
+            </label>
+            <div>{this.state.selectedDay}</div>
+            <button onClick={this.handleSubmit}>save</button>
+          </form>
+          <div className="Schedule-list">
+            <h1>{this.state.month + 1}月の予定</h1>
+            {displayList}
+          </div>
+        </div>
       </div>
     );
   }

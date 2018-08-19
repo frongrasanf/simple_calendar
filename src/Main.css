@@ -30,3 +30,14 @@
 .Saturday {
   color: #6495ed
 }
+
+.Api-field {
+  display: flex;
+}
+
+.Schedule-list {
+  width: 50%;
+}
+.New-schedule-form {
+  width: 50%;
+}
