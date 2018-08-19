@@ -3,8 +3,9 @@ import './Main.css';
 import DisplayWeeks from './DisplayWeeks';
 import moment from 'moment';
 import axios from 'axios';
+import ENV from './.env';
 
-const ApiEndpoint = 'http://localhost:3003'
+const ApiEndpoint = ENV.API_ENDPOINT
 
 class Main extends Component {
   constructor() {
@@ -39,7 +40,7 @@ class Main extends Component {
     const time = this.state.selectedDay
     params.append('title', input)
     params.append('start_at', time)
-    axios.post("http://localhost:3003/schedules", params)
+    axios.post(ApiEndpoint + "schedules", params)
     .then((res) => {
       console.log("res", res.data)
       this.setState({
@@ -51,7 +52,6 @@ class Main extends Component {
   }
   // propsで渡ってきたslectedDayを日付として扱いたい
   setSelectedDay(day) {
-    console.log("here", day)
     let array = day.split("/")
     let someday = moment().year(array[0]).month(array[1] - 1).date(array[2]).format("YYYY/M/D")
     this.setState({
@@ -102,12 +102,20 @@ class Main extends Component {
         }
       }
     }
-    this.setScheduleList()
     this.setState({
       month: tsugi,
       year: tempYear,
       displayDays: dayArray,
       selectedDay: ""
+    })
+    let params = new URLSearchParams()
+    let monthParams = tsugi
+    let queryDate = moment().year(tempYear).month(tsugi).date(1).format("YYYY-M-D")
+
+    axios.get(ApiEndpoint+ `?date=${queryDate}`)
+    .then((res) => {
+      console.log("res", res.data)
+      this.setState({ scheduleList: res.data})
     })
   }
 
@@ -144,6 +152,7 @@ class Main extends Component {
     })
   }
   setScheduleList() {
+    console.log("month", this.state.month)
     axios.get(ApiEndpoint)
     .then((res) => {
       console.log("res", res.data)
@@ -151,12 +160,11 @@ class Main extends Component {
     })
   }
   componentDidMount() {
+    console.log("did  idd")
     this.setScheduleList()
   }
   render() {
-    console.log("slect", this.state.scheduleList)
     const { scheduleList } = this.state
-
     const displayList = scheduleList.map((list) => {
       return (
         <p>{list.title}</p>
@@ -194,7 +202,7 @@ class Main extends Component {
             />
           </div>
           <div className="Schedule-list">
-            <h1>今月の予定</h1>
+            <h1>{this.state.month + 1}月の予定</h1>
             {displayList}
           </div>
         </div>
