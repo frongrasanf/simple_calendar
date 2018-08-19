@@ -5,6 +5,7 @@
 
 .Calendar-body {
   padding: 10px;
+  height: 400px;
 }
 .Week-row {
   display: flex;

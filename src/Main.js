@@ -285,7 +285,7 @@ class Main extends Component {
               <button onClick={this.handleSubmit}>SAVE</button>
             </form>
           : <div className="New-schedule-info">
-              <p>日付をクリックして予定を登録できます</p>
+              日付をクリックして予定を登録できます
             </div>
         }
           <div className="Schedule-list">
