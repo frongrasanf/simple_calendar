@@ -4,7 +4,6 @@
 }
 
 .Calendar-body {
-  width: 75%;
   padding: 10px;
 }
 .Week-row {
@@ -37,5 +36,8 @@
 }
 
 .Schedule-list {
-  width: 25%;
+  width: 50%;
+}
+.New-schedule-form {
+  width: 50%;
 }

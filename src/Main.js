@@ -25,6 +25,7 @@ class Main extends Component {
       scheduleList: []
     }
     this.moveToNextMonth = this.moveToNextMonth.bind(this)
+    this.moveToPreviousMonth = this.moveToPreviousMonth.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.setSelectedDay = this.setSelectedDay.bind(this)
@@ -118,6 +119,67 @@ class Main extends Component {
       this.setState({ scheduleList: res.data})
     })
   }
+  moveToPreviousMonth() {
+    const { firstDay, month, displayDays, year } = this.state
+    let mae = month - 1
+    let tempYear = year
+    let firstDay3 = ""
+    // 12月から1月の場合
+    if (mae == -1) {
+      mae = 11
+      tempYear = tempYear - 1
+      firstDay3 = moment().year(tempYear).month(mae).date(1)
+    } else {
+      firstDay3 = moment().year(tempYear).month(mae).date(1)
+    }
+
+    //ここから表示する日付を計算
+    let tempDay = firstDay3;
+    let wday = firstDay3.day();
+    let tempMonth = mae
+
+    let dayArray = [];
+    //1日よりも前の日を入れる
+    for (let i = 0; i < wday; i++) {
+      let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/M/D")
+      dayArray.push(beforeDay)
+      tempDay.add(wday - i, 'days').format("YYYY/M/D")
+    }
+
+    let flag = true
+    while(flag = true) {
+      let day = tempDay.format("YYYY/M/D")
+      dayArray.push(day)
+      tempDay.add(1, 'days').format("YYYY/M/D")
+      // 12月を表示する場合、ここは11
+      let mae2 = tempDay.month()
+      if (tempDay.day() === 0) {
+        if (mae2 === mae + 1) {
+          flag = false
+          break;
+        } else if (mae === 11 && mae2 === 0) {
+          flag = false
+          break;
+        }
+      }
+    }
+    this.setState({
+      month: mae,
+      year: tempYear,
+      displayDays: dayArray,
+      selectedDay: ""
+    })
+    let params = new URLSearchParams()
+    let monthParams = mae
+    let queryDate = moment().year(tempYear).month(mae).date(1).format("YYYY-M-D")
+
+    axios.get(ApiEndpoint+ `?date=${queryDate}`)
+    .then((res) => {
+      console.log("res", res.data)
+      this.setState({ scheduleList: res.data})
+    })
+
+  }
 
   componentWillMount() {
     const { firstDay, month, displayDays } = this.state
@@ -188,32 +250,32 @@ class Main extends Component {
     return (
       <div>
         <div className="Calendar-header">
-          <button className="Month-button">先月</button>
+          <button className="Month-button" onClick={this.moveToPreviousMonth}>先月</button>
           <button className="Month-button" onClick={this.moveToNextMonth}>次月</button>
           <div className="Calendar-header-text">{this.state.year}年 {this.state.month + 1}月</div>
         </div>
+        <div className="Calendar-body">
+          {weekInfo}
+          <DisplayWeeks
+            setSelectedDay={this.setSelectedDay}
+            moveToNextMonth={this.moveToNextMonth}
+            displayDays={this.state.displayDays}
+          />
+        </div>
         <div className="Api-field">
-          <div className="Calendar-body">
-            {weekInfo}
-            <DisplayWeeks
-              setSelectedDay={this.setSelectedDay}
-              moveToNextMonth={this.moveToNextMonth}
-              displayDays={this.state.displayDays}
-            />
-          </div>
+          <form className="New-schedule-form">
+            <label>
+              Title:
+              <textarea name="title" value={this.state.newScheduleTitle} onChange={this.handleChange} />
+            </label>
+            <div>{this.state.selectedDay}</div>
+            <button onClick={this.handleSubmit}>save</button>
+          </form>
           <div className="Schedule-list">
             <h1>{this.state.month + 1}月の予定</h1>
             {displayList}
           </div>
         </div>
-        <form>
-          <label>
-            Title:
-            <textarea name="title" value={this.state.newScheduleTitle} onChange={this.handleChange} />
-          </label>
-          <div>{this.state.selectedDay}</div>
-          <button onClick={this.handleSubmit}>save</button>
-        </form>
       </div>
     );
   }
