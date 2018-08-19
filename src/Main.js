@@ -62,12 +62,12 @@ class Main extends Component {
     })
   }
   moveToNextMonth() {
-    const { firstDay, month, displayDays, year } = this.state
+    const { month, year } = this.state
     let tsugi = month + 1
     let tempYear = year
     let firstDay2 = ""
     // 12月から1月の場合
-    if (tsugi == 12) {
+    if (tsugi === 12) {
       tsugi = 0
       tempYear = tempYear + 1
       firstDay2 = moment().year(tempYear).month(tsugi).date(1)
@@ -78,7 +78,6 @@ class Main extends Component {
     //ここから表示する日付を計算
     let tempDay = firstDay2;
     let wday = firstDay2.day();
-    let tempMonth = tsugi
 
     let dayArray = [];
     //1日よりも前の日を入れる
@@ -112,8 +111,7 @@ class Main extends Component {
       selectedDay: "",
       isShown: false
     })
-    let params = new URLSearchParams()
-    let monthParams = tsugi
+
     let queryDate = moment().year(tempYear).month(tsugi).date(1).format("YYYY-M-D")
 
     axios.get(ApiEndpoint+ `?date=${queryDate}`)
@@ -123,12 +121,12 @@ class Main extends Component {
     })
   }
   moveToPreviousMonth() {
-    const { firstDay, month, displayDays, year } = this.state
+    const { month, year } = this.state
     let mae = month - 1
     let tempYear = year
     let firstDay3 = ""
     // 12月から1月の場合
-    if (mae == -1) {
+    if (mae === -1) {
       mae = 11
       tempYear = tempYear - 1
       firstDay3 = moment().year(tempYear).month(mae).date(1)
@@ -139,7 +137,6 @@ class Main extends Component {
     //ここから表示する日付を計算
     let tempDay = firstDay3;
     let wday = firstDay3.day();
-    let tempMonth = mae
 
     let dayArray = [];
     //1日よりも前の日を入れる
@@ -173,10 +170,7 @@ class Main extends Component {
       selectedDay: "",
       isShown: false
     })
-    let params = new URLSearchParams()
-    let monthParams = mae
     let queryDate = moment().year(tempYear).month(mae).date(1).format("YYYY-M-D")
-
     axios.get(ApiEndpoint+ `?date=${queryDate}`)
     .then((res) => {
       console.log("res", res.data)
@@ -186,7 +180,7 @@ class Main extends Component {
   }
 
   componentWillMount() {
-    const { firstDay, month, displayDays } = this.state
+    const { firstDay, month } = this.state
     let tempDay = firstDay
     let wday = firstDay.day();
     let tempMonth = month
