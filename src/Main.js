@@ -235,9 +235,7 @@ class Main extends Component {
   componentDidMount() {
     this.setScheduleList()
   }
-  displayListDate(date) {
-    return date.split("-")[2].split("T")[0]
-  }
+
   render() {
     const { scheduleList } = this.state
     console.log("list", scheduleList)
