@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
-import moment from 'moment';
 
 class DisplayWeeks extends Component {
-  constructor(props) {
-    super(props)
-  }
+
   setSelectedDay(i) {
     return this.props.setSelectedDay(i)
   }
