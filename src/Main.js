@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './Main.css';
 import DisplayWeeks from './DisplayWeeks';
+import ScheduledList from './ScheduledList';
 import moment from 'moment';
 import axios from 'axios';
 // import ENV from './.env';
@@ -29,6 +30,7 @@ class Main extends Component {
     this.moveToPreviousMonth = this.moveToPreviousMonth.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.deleteList = this.deleteList.bind(this)
     this.setSelectedDay = this.setSelectedDay.bind(this)
     this.setScheduleList = this.setScheduleList.bind(this)
   }
@@ -51,6 +53,18 @@ class Main extends Component {
       })
     })
     e.preventDefault()
+  }
+
+  deleteList(id) {
+    console.log("id", id)
+    axios.delete(ApiEndpoint + `schedules/${id}`)
+    .then((res) => {
+      console.log("res", res.data)
+      this.setState({
+        scheduleList: res.data,
+        newScheduleTitle: ""
+      })
+    })
   }
   // propsで渡ってきたslectedDayを日付として扱いたい
   setSelectedDay(day) {
@@ -215,35 +229,21 @@ class Main extends Component {
     console.log("month", this.state.month)
     axios.get(ApiEndpoint)
     .then((res) => {
-      console.log("res", res.data[0].start_at)
-      let tempArray = []
-      let aaa = res.data[0].start_at
-      tempArray = aaa.split("-")
-      let bbb = tempArray[2].split("T")
-      console.log("array", bbb)
       this.setState({ scheduleList: res.data})
     })
   }
   componentDidMount() {
-    console.log("did  idd")
     this.setScheduleList()
   }
   displayListDate(date) {
-    let aaa = date.split("-")
-    console.log("aaa", aaa)
-    let bbb = aaa[2].split("T")[0]
-    console.log("bbb", bbb)
-    return bbb
+    return date.split("-")[2].split("T")[0]
   }
   render() {
     const { scheduleList } = this.state
+    console.log("list", scheduleList)
     const displayList = scheduleList.map((list) => {
       return (
-        <div>
-          {this.displayListDate(list.start_at)}日：
-          {list.title}
-          <button onClick={this.handleDelete}>Delete</button>
-        </div>
+        <ScheduledList data={list} onDelete={this.deleteList}/>
       )
     })
 
@@ -291,7 +291,7 @@ class Main extends Component {
             </div>
         }
           <div className="Schedule-list">
-            <p>{this.state.month + 1}月の予定一覧</p>
+            {this.state.month + 1}月の予定一覧
             {displayList}
           </div>
         </div>
