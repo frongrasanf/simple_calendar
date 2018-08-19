@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './Main.css';
 import DisplayWeeks from './DisplayWeeks';
 import moment from 'moment';
+import axios from 'axios';
 
 class Main extends Component {
   constructor() {
@@ -17,7 +18,8 @@ class Main extends Component {
       firstDay: firstDay,
       displayDays: [],
       newScheduleTitle: "",
-      selectedDay: ""
+      selectedDay: "",
+      scheduleList: []
     }
     this.moveToNextMonth = this.moveToNextMonth.bind(this)
     this.handleChange = this.handleChange.bind(this)
@@ -39,56 +41,56 @@ class Main extends Component {
     })
   }
   moveToNextMonth() {
-  const { firstDay, month, displayDays, year } = this.state
-  let tsugi = month + 1
-  let tempYear = year
-  let firstDay2 = ""
-  // 12月から1月の場合
-  if (tsugi == 12) {
-    tsugi = 0
-    tempYear = tempYear + 1
-    firstDay2 = moment().year(tempYear).month(tsugi).date(1)
-  } else {
-    firstDay2 = moment().year(tempYear).month(tsugi).date(1)
-  }
+    const { firstDay, month, displayDays, year } = this.state
+    let tsugi = month + 1
+    let tempYear = year
+    let firstDay2 = ""
+    // 12月から1月の場合
+    if (tsugi == 12) {
+      tsugi = 0
+      tempYear = tempYear + 1
+      firstDay2 = moment().year(tempYear).month(tsugi).date(1)
+    } else {
+      firstDay2 = moment().year(tempYear).month(tsugi).date(1)
+    }
 
-  //ここから表示する日付を計算
-  let tempDay = firstDay2;
-  let wday = firstDay2.day();
-  let tempMonth = tsugi
+    //ここから表示する日付を計算
+    let tempDay = firstDay2;
+    let wday = firstDay2.day();
+    let tempMonth = tsugi
 
-  let dayArray = [];
-  //1日よりも前の日を入れる
-  for (let i = 0; i < wday; i++) {
-    let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/M/D")
-    dayArray.push(beforeDay)
-    tempDay.add(wday - i, 'days').format("YYYY/M/D")
-  }
+    let dayArray = [];
+    //1日よりも前の日を入れる
+    for (let i = 0; i < wday; i++) {
+      let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/M/D")
+      dayArray.push(beforeDay)
+      tempDay.add(wday - i, 'days').format("YYYY/M/D")
+    }
 
-  let flag = true
-  while(flag = true) {
-    let day = tempDay.format("YYYY/M/D")
-    dayArray.push(day)
-    tempDay.add(1, 'days').format("YYYY/M/D")
-    // 12月を表示する場合、ここは11
-    let tsugi2 = tempDay.month()
-    if (tempDay.day() === 0) {
-      if (tsugi2 === tsugi + 1) {
-        flag = false
-        break;
-      } else if (tsugi === 11 && tsugi2 === 0) {
-        flag = false
-        break;
+    let flag = true
+    while(flag = true) {
+      let day = tempDay.format("YYYY/M/D")
+      dayArray.push(day)
+      tempDay.add(1, 'days').format("YYYY/M/D")
+      // 12月を表示する場合、ここは11
+      let tsugi2 = tempDay.month()
+      if (tempDay.day() === 0) {
+        if (tsugi2 === tsugi + 1) {
+          flag = false
+          break;
+        } else if (tsugi === 11 && tsugi2 === 0) {
+          flag = false
+          break;
+        }
       }
     }
+    this.setState({
+      month: tsugi,
+      year: tempYear,
+      displayDays: dayArray,
+      selectedDay: ""
+    })
   }
-  this.setState({
-    month: tsugi,
-    year: tempYear,
-    displayDays: dayArray,
-    selectedDay: ""
-  })
-}
 
   componentWillMount() {
     const { firstDay, month, displayDays } = this.state
@@ -122,7 +124,22 @@ class Main extends Component {
       displayDays: dayArray
     })
   }
+  componentDidMount() {
+    const ApiEndpoint = 'http://localhost:3003'
+    axios.get(ApiEndpoint)
+    .then((res) => {
+      this.setState({ scheduleList: res.data})
+    })
+  }
   render() {
+    const { scheduleList } = this.state
+
+    const displayList = scheduleList.map((list) => {
+      return (
+        <h5>{list.title}</h5>
+      )
+    })
+
     const weekInfo = (
       <div className="Week-info">
         <div className="Week-row">
@@ -151,6 +168,10 @@ class Main extends Component {
             moveToNextMonth={this.moveToNextMonth}
             displayDays={this.state.displayDays}
           />
+        </div>
+        <div>
+          <h1>here</h1>
+          {displayList}
         </div>
         <form>
           <label>
