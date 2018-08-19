@@ -54,8 +54,8 @@ class Main extends Component {
   }
   // propsで渡ってきたslectedDayを日付として扱いたい
   setSelectedDay(day) {
-    let array = day.split("/")
-    let someday = moment().year(array[0]).month(array[1] - 1).date(array[2]).format("YYYY/M/D")
+    let array = day.split("-")
+    let someday = moment().year(array[0]).month(array[1] - 1).date(array[2]).format("YYYY-M-D")
     this.setState({
       selectedDay: someday,
       isShown: true
@@ -82,16 +82,16 @@ class Main extends Component {
     let dayArray = [];
     //1日よりも前の日を入れる
     for (let i = 0; i < wday; i++) {
-      let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/M/D")
+      let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY-M-D")
       dayArray.push(beforeDay)
-      tempDay.add(wday - i, 'days').format("YYYY/M/D")
+      tempDay.add(wday - i, 'days').format("YYYY-M-D")
     }
 
     let flag = true
     while(flag = true) {
-      let day = tempDay.format("YYYY/M/D")
+      let day = tempDay.format("YYYY-M-D")
       dayArray.push(day)
-      tempDay.add(1, 'days').format("YYYY/M/D")
+      tempDay.add(1, 'days').format("YYYY-M-D")
       // 12月を表示する場合、ここは11
       let tsugi2 = tempDay.month()
       if (tempDay.day() === 0) {
@@ -141,16 +141,16 @@ class Main extends Component {
     let dayArray = [];
     //1日よりも前の日を入れる
     for (let i = 0; i < wday; i++) {
-      let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/M/D")
+      let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY-M-D")
       dayArray.push(beforeDay)
-      tempDay.add(wday - i, 'days').format("YYYY/M/D")
+      tempDay.add(wday - i, 'days').format("YYYY-M-D")
     }
 
     let flag = true
     while(flag = true) {
-      let day = tempDay.format("YYYY/M/D")
+      let day = tempDay.format("YYYY-M-D")
       dayArray.push(day)
-      tempDay.add(1, 'days').format("YYYY/M/D")
+      tempDay.add(1, 'days').format("YYYY-M-D")
       // 12月を表示する場合、ここは11
       let mae2 = tempDay.month()
       if (tempDay.day() === 0) {
@@ -188,17 +188,17 @@ class Main extends Component {
     let dayArray = [];
     // 1日よりも前の日を入れる
     for (let i = 0; i < wday; i++) {
-      let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY/M/D")
+      let beforeDay = tempDay.subtract(wday - i, 'days').format("YYYY-M-D")
       dayArray.push(beforeDay)
-      tempDay.add(wday - i, 'days').format("YYYY/M/D")
+      tempDay.add(wday - i, 'days').format("YYYY-M-D")
     }
 
     let nextMonth = tempMonth + 1
     let flag = true
     while(flag = true) {
-      let day = tempDay.format("YYYY/M/D")
+      let day = tempDay.format("YYYY-M-D")
       dayArray.push(day)
-      tempDay.add(1, 'days').format("YYYY/M/D")
+      tempDay.add(1, 'days').format("YYYY-M-D")
       tempMonth = tempDay.month()
       if (tempDay.day() === 0) {
         if (tempMonth === nextMonth) {
@@ -215,7 +215,12 @@ class Main extends Component {
     console.log("month", this.state.month)
     axios.get(ApiEndpoint)
     .then((res) => {
-      console.log("res", res.data)
+      console.log("res", res.data[0].start_at)
+      let tempArray = []
+      let aaa = res.data[0].start_at
+      tempArray = aaa.split("-")
+      let bbb = tempArray[2].split("T")
+      console.log("array", bbb)
       this.setState({ scheduleList: res.data})
     })
   }
@@ -223,11 +228,22 @@ class Main extends Component {
     console.log("did  idd")
     this.setScheduleList()
   }
+  displayListDate(date) {
+    let aaa = date.split("-")
+    console.log("aaa", aaa)
+    let bbb = aaa[2].split("T")[0]
+    console.log("bbb", bbb)
+    return bbb
+  }
   render() {
     const { scheduleList } = this.state
     const displayList = scheduleList.map((list) => {
       return (
-        <p>{list.title}</p>
+        <div>
+          {this.displayListDate(list.start_at)}日：
+          {list.title}
+          <button onClick={this.handleDelete}>Delete</button>
+        </div>
       )
     })
 
@@ -275,7 +291,7 @@ class Main extends Component {
             </div>
         }
           <div className="Schedule-list">
-            <p>{this.state.month + 1}月の予定</p>
+            <p>{this.state.month + 1}月の予定一覧</p>
             {displayList}
           </div>
         </div>

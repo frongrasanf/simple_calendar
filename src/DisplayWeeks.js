@@ -6,7 +6,7 @@ class DisplayWeeks extends Component {
     return this.props.setSelectedDay(i)
   }
   changeToDisplayStyle(day) {
-    let array = day.split("/")
+    let array = day.split("-")
     return array[array.length - 1]
   }
   render() {
