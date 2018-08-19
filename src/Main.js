@@ -4,6 +4,8 @@ import DisplayWeeks from './DisplayWeeks';
 import moment from 'moment';
 import axios from 'axios';
 
+const ApiEndpoint = 'http://localhost:3003'
+
 class Main extends Component {
   constructor() {
     super()
@@ -25,11 +27,24 @@ class Main extends Component {
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.setSelectedDay = this.setSelectedDay.bind(this)
+    this.setScheduleList = this.setScheduleList.bind(this)
   }
+
   handleChange(e) {
     this.setState({newScheduleTitle: e.target.value});
   }
   handleSubmit() {
+    let params = new URLSearchParams()
+    const input = this.state.newScheduleTitle
+    const time = this.state.selectedDay
+    params.append('title', input)
+    params.append('start_at', time)
+    axios.post("http://localhost:3003/schedules", params)
+    .then((res) => {
+      console.log("res", res.data)
+      this.setState({ scheduleList: res.data})
+    })
+
   }
   // propsで渡ってきたslectedDayを日付として扱いたい
   setSelectedDay(day) {
@@ -84,6 +99,7 @@ class Main extends Component {
         }
       }
     }
+    this.setScheduleList()
     this.setState({
       month: tsugi,
       year: tempYear,
@@ -124,19 +140,23 @@ class Main extends Component {
       displayDays: dayArray
     })
   }
-  componentDidMount() {
-    const ApiEndpoint = 'http://localhost:3003'
+  setScheduleList() {
     axios.get(ApiEndpoint)
     .then((res) => {
+      console.log("res", res.data)
       this.setState({ scheduleList: res.data})
     })
   }
+  componentDidMount() {
+    this.setScheduleList()
+  }
   render() {
+    console.log("slect", this.state.scheduleList)
     const { scheduleList } = this.state
 
     const displayList = scheduleList.map((list) => {
       return (
-        <h5>{list.title}</h5>
+        <p>{list.title}</p>
       )
     })
 
@@ -161,17 +181,19 @@ class Main extends Component {
           <button className="Month-button" onClick={this.moveToNextMonth}>次月</button>
           <div className="Calendar-header-text">{this.state.year}年 {this.state.month + 1}月</div>
         </div>
-        <div className="Calendar-body">
-          {weekInfo}
-          <DisplayWeeks
-            setSelectedDay={this.setSelectedDay}
-            moveToNextMonth={this.moveToNextMonth}
-            displayDays={this.state.displayDays}
-          />
-        </div>
-        <div>
-          <h1>here</h1>
-          {displayList}
+        <div className="Api-field">
+          <div className="Calendar-body">
+            {weekInfo}
+            <DisplayWeeks
+              setSelectedDay={this.setSelectedDay}
+              moveToNextMonth={this.moveToNextMonth}
+              displayDays={this.state.displayDays}
+            />
+          </div>
+          <div className="Schedule-list">
+            <h1>今月の予定</h1>
+            {displayList}
+          </div>
         </div>
         <form>
           <label>

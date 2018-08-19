@@ -4,6 +4,7 @@
 }
 
 .Calendar-body {
+  width: 75%;
   padding: 10px;
 }
 .Week-row {
@@ -29,4 +30,12 @@
 
 .Saturday {
   color: #6495ed
+}
+
+.Api-field {
+  display: flex;
+}
+
+.Schedule-list {
+  width: 25%;
 }
