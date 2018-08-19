@@ -22,7 +22,8 @@ class Main extends Component {
       displayDays: [],
       newScheduleTitle: "",
       selectedDay: "",
-      scheduleList: []
+      scheduleList: [],
+      isShown: false
     }
     this.moveToNextMonth = this.moveToNextMonth.bind(this)
     this.moveToPreviousMonth = this.moveToPreviousMonth.bind(this)
@@ -56,7 +57,8 @@ class Main extends Component {
     let array = day.split("/")
     let someday = moment().year(array[0]).month(array[1] - 1).date(array[2]).format("YYYY/M/D")
     this.setState({
-      selectedDay: someday
+      selectedDay: someday,
+      isShown: true
     })
   }
   moveToNextMonth() {
@@ -107,7 +109,8 @@ class Main extends Component {
       month: tsugi,
       year: tempYear,
       displayDays: dayArray,
-      selectedDay: ""
+      selectedDay: "",
+      isShown: false
     })
     let params = new URLSearchParams()
     let monthParams = tsugi
@@ -167,7 +170,8 @@ class Main extends Component {
       month: mae,
       year: tempYear,
       displayDays: dayArray,
-      selectedDay: ""
+      selectedDay: "",
+      isShown: false
     })
     let params = new URLSearchParams()
     let monthParams = mae
@@ -263,16 +267,21 @@ class Main extends Component {
           />
         </div>
         <div className="Api-field">
-          <form className="New-schedule-form">
-            <label>
-              Title:
-              <textarea name="title" value={this.state.newScheduleTitle} onChange={this.handleChange} />
-            </label>
-            <div>{this.state.selectedDay}</div>
-            <button onClick={this.handleSubmit}>save</button>
-          </form>
+        { this.state.isShown
+          ? <form className="New-schedule-form">
+              <label>
+                Title:
+              </label>
+              <input type="text" name="title" value={this.state.newScheduleTitle} onChange={this.handleChange} />
+              <div>Date: {this.state.selectedDay}</div>
+              <button onClick={this.handleSubmit}>SAVE</button>
+            </form>
+          : <div className="New-schedule-info">
+              <p>日付をクリックして予定を登録できます</p>
+            </div>
+        }
           <div className="Schedule-list">
-            <h1>{this.state.month + 1}月の予定</h1>
+            <p>{this.state.month + 1}月の予定</p>
             {displayList}
           </div>
         </div>

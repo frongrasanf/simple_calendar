@@ -33,11 +33,15 @@
 
 .Api-field {
   display: flex;
+  padding: 10px;
 }
 
 .Schedule-list {
   width: 50%;
 }
 .New-schedule-form {
+  width: 50%;
+}
+.New-schedule-info {
   width: 50%;
 }
