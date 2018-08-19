@@ -5,7 +5,7 @@ import moment from 'moment';
 import axios from 'axios';
 // import ENV from './.env';
 
-const ApiEndpoint = ENV.API_ENDPOINT
+const ApiEndpoint = "https://intense-fortress-41067.herokuapp.com/"
 
 class Main extends Component {
   constructor() {
