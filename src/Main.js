@@ -3,7 +3,7 @@ import './Main.css';
 import DisplayWeeks from './DisplayWeeks';
 import moment from 'moment';
 import axios from 'axios';
-import ENV from './.env';
+// import ENV from './.env';
 
 const ApiEndpoint = ENV.API_ENDPOINT
 
