@@ -33,7 +33,7 @@ class Main extends Component {
   handleChange(e) {
     this.setState({newScheduleTitle: e.target.value});
   }
-  handleSubmit() {
+  handleSubmit(e) {
     let params = new URLSearchParams()
     const input = this.state.newScheduleTitle
     const time = this.state.selectedDay
@@ -42,9 +42,12 @@ class Main extends Component {
     axios.post("http://localhost:3003/schedules", params)
     .then((res) => {
       console.log("res", res.data)
-      this.setState({ scheduleList: res.data})
+      this.setState({
+        scheduleList: res.data,
+        newScheduleTitle: ""
+      })
     })
-
+    e.preventDefault()
   }
   // propsで渡ってきたslectedDayを日付として扱いたい
   setSelectedDay(day) {
