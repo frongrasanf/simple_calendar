@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 
 class ScheduledList extends Component {
-
   handleDelete = () => {
     this.props.onDelete(this.props.data.id)
   }
@@ -10,7 +9,6 @@ class ScheduledList extends Component {
     return date.split("-")[2].split("T")[0]
   }
   render() {
-    console.log("props", this.props)
     const { data } = this.props
     return (
       <div>

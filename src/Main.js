@@ -48,7 +48,6 @@ class Main extends Component {
     params.append('start_at', time)
     axios.post(ApiEndpoint + "schedules", params)
     .then((res) => {
-      console.log("res", res.data)
       this.setState({
         scheduleList: res.data,
         newScheduleTitle: ""
@@ -58,10 +57,8 @@ class Main extends Component {
   }
 
   deleteList(id) {
-    console.log("id", id)
     axios.delete(ApiEndpoint + `schedules/${id}`)
     .then((res) => {
-      console.log("res", res.data)
       this.setState({
         scheduleList: res.data,
         newScheduleTitle: ""
@@ -132,7 +129,6 @@ class Main extends Component {
 
     axios.get(ApiEndpoint+ `?date=${queryDate}`)
     .then((res) => {
-      console.log("res", res.data)
       this.setState({ scheduleList: res.data})
     })
   }
@@ -189,7 +185,6 @@ class Main extends Component {
     let queryDate = moment().year(tempYear).month(mae).date(1).format("YYYY-M-D")
     axios.get(ApiEndpoint+ `?date=${queryDate}`)
     .then((res) => {
-      console.log("res", res.data)
       this.setState({ scheduleList: res.data})
     })
 
@@ -228,7 +223,6 @@ class Main extends Component {
     })
   }
   setScheduleList() {
-    console.log("month", this.state.month)
     axios.get(ApiEndpoint)
     .then((res) => {
       this.setState({ scheduleList: res.data})
@@ -240,7 +234,6 @@ class Main extends Component {
 
   render() {
     const { scheduleList } = this.state
-    console.log("list", scheduleList)
     const displayList = scheduleList.map((list) => {
       return (
         <ScheduledList data={list} onDelete={this.deleteList}/>
