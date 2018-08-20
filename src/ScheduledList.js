@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Button from '@material-ui/core/Button';
 
 class ScheduledList extends Component {
 
@@ -15,7 +16,7 @@ class ScheduledList extends Component {
       <div>
         {this.displayListDate(data.start_at)}日:
         {data.title}
-        <button onClick={this.handleDelete}>Delete</button>
+        <Button color="secondary" onClick={this.handleDelete}>削除</Button>
       </div>
 
     )

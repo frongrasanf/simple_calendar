@@ -2,6 +2,9 @@
   text-align: center;
   padding-top: 10px;
 }
+.Calendar-header-text {
+  font-weight: bold;
+}
 
 .Calendar-body {
   padding: 10px;

@@ -4,6 +4,8 @@ import DisplayWeeks from './DisplayWeeks';
 import ScheduledList from './ScheduledList';
 import moment from 'moment';
 import axios from 'axios';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 // import ENV from './.env';
 
 const ApiEndpoint = "https://intense-fortress-41067.herokuapp.com/"
@@ -262,9 +264,9 @@ class Main extends Component {
     return (
       <div>
         <div className="Calendar-header">
-          <button className="Month-button" onClick={this.moveToPreviousMonth}>先月</button>
-          <button className="Month-button" onClick={this.moveToNextMonth}>次月</button>
-          <div className="Calendar-header-text">{this.state.year}年 {this.state.month + 1}月</div>
+          <p className="Calendar-header-text">{this.state.year}年 {this.state.month + 1}月</p>
+          <Button className="Month-button" onClick={this.moveToPreviousMonth}>先月</Button>
+          <Button className="Month-button" onClick={this.moveToNextMonth}>次月</Button>
         </div>
         <div className="Calendar-body">
           {weekInfo}
@@ -277,12 +279,19 @@ class Main extends Component {
         <div className="Api-field">
         { this.state.isShown
           ? <form className="New-schedule-form">
-              <label>
-                Title:
-              </label>
-              <input type="text" name="title" value={this.state.newScheduleTitle} onChange={this.handleChange} />
-              <div>Date: {this.state.selectedDay}</div>
-              <button onClick={this.handleSubmit}>SAVE</button>
+              <TextField
+                value={this.state.selectedDay}
+                inputProps={{readOnly: true}}
+              />
+              <TextField
+                label="タイトルを入力"
+                type="text"
+                name="title"
+                value={this.state.newScheduleTitle}
+                onChange={this.handleChange}
+              />
+              <Button onClick={this.handleSubmit} color="primary">保存
+              </Button>
             </form>
           : <div className="New-schedule-info">
               日付をクリックして予定を登録できます
